@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+   <link rel="stylesheet" href="ecommer2.css">
+   <!-- <link rel="stylesheet" href="login.html"> -->
+  </head>
+  <body>
+    <nav class="navbar">
+      <div class="nav-logo">E-Shop</div>
+      <form class="nav-search" onsubmit="event.preventDefault(); search();">
+        <input type="text" id="sch" placeholder="Search products..." oninput="search()" />
+        <button type="submit" class="search-btn">🔍</button>
+      </form>
+      <div class="nav-actions">
+        <a href="login.html" class="nav-btn">Login/Register</a>
+        <a href="cart2.html" class="nav-btn cart-btn">🛒 Cart</a>
+      </div>
+    </nav>
+    <div class="nav-sort">
+      <select name="" id="sort" onchange="sort()">
+        <option value="">Sort by price</option>
+        <option value="asc">Low to High</option>
+        <option value="dsc">High to Low</option>
+      </select>
+    </div>
+    <h1>Welcome to my Ecommerce application..</h1>
+    <!-- append all your product here... -->
+    <div class="cont"></div>
+  </body>
+
+</html>
+
+<script>
+  let bag = [];
+   let cartArr = JSON.parse(localStorage.getItem("cart")) || [];
+  fetch("https://fakestoreapi.com/products")
+    .then((res) => res.json())
+    .then((data) => {
+      console.log(data);
+      bag = data;
+      displayCard(data);
+    })
+    .catch((err) => console.log(err));
+
+  //   2. dispplay card on UI
+  function displayCard(arr) {
+    document.querySelector(".cont").innerText = "";
+    arr.forEach((el) => {
+      const box = document.createElement("div");
+
+      const image = document.createElement("img");
+      image.setAttribute("src", el.image);
+
+      const title = document.createElement("h3");
+      title.innerText = `Title: ${el.title}`;
+
+      const description = document.createElement("p");
+      description.innerHTML = `Description: ${el.description}`;
+
+      const category = document.createElement("p");
+      category.innerHTML = `Category: ${el.category}`;
+
+      const price = document.createElement("button");
+      price.innerHTML = `Price: ${el.price}`;
+
+      const rate = document.createElement("button");
+      rate.innerHTML = `Rating: ${el.rating.rate}`;
+
+
+      const addToCart = document.createElement("button");
+      addToCart.innerHTML = 'Add to Cart';
+      addToCart.onclick = function() {
+        let cart = JSON.parse(localStorage.getItem("cart")) || [];
+        cart.push(el);
+        localStorage.setItem("cart", JSON.stringify(cart));
+        alert("Item added to cart");
+      };
+
+      box.append(image, title, description, category, price, rate, addToCart);
+
+      document.querySelector(".cont").append(box);
+    });
+  }
+
+  function search() {
+    const query = document.querySelector("#sch").value;
+    console.log(query);
+
+    let searchData = bag.filter((el) => {
+      return el.title.toLowerCase().includes(query.toLowerCase());
+    });
+    console.log(searchData);
+    displayCard(searchData);
+  }
+
+  function sort() {
+    const query = document.querySelector("#sort").value;
+    if (query === "asc") {
+      const sortedAscData = [...bag].sort((a, b) => a.price - b.price);
+      displayCard(sortedAscData);
+    } else if (query === "dsc") {
+      const sortedDscData = [...bag].sort((a, b) => b.price - a.price);
+      displayCard(sortedDscData);
+    } else {
+      displayCard(bag);
+    }
+  }
+</script>

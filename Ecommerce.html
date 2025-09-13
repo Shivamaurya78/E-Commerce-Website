@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>E-Commerce App</title>
+  <!-- <link rel="stylesheet" href="ecommer2.css"> -->
+  <link rel="stylesheet" href="Ecommerce.css">
+ 
+</head>
+<body>
+
+  <!-- Navbar -->
+  <div class="navbar">
+    <div class="logo">🛍️ MyShop</div>
+    <div class="search-bar">
+      <input type="text" id="sch" placeholder="Search here..." oninput="search()">
+      <select id="sort" onchange="sort()">
+        <option value="">Price</option>
+        <option value="asc">Low to High</option>
+        <option value="dsc">High to Low</option>
+      </select>
+    </div>
+    <div class="nav-links">
+      <a href="login.html">Login/Register</a>
+      <a href="cart2.html" class="cart-btn">Cart <span id="cartCount" class="cart-count">0</span></a>
+    </div>
+  </div>
+
+  <!-- Products Section -->
+  <h1 style="text-align:center; margin:20px;">Welcome To My Ecommerce Website..</h1>
+  <div class="cont"></div>
+
+  <script>
+    let bag = [];
+    let cartArr = JSON.parse(localStorage.getItem("cart")) || [];
+
+    // Fetch products
+    fetch("https://fakestoreapi.com/products")
+      .then((res) => res.json())
+      .then((data) => {
+        bag = data;
+        displayCard(data);
+        updateCartCount();
+      })
+      .catch((err) => console.log(err));
+
+    // Display products
+    function displayCard(arr) {
+      document.querySelector(".cont").innerHTML = "";
+      arr.forEach((el) => {
+        const box = document.createElement("div");
+
+        const image = document.createElement("img");
+        image.src = el.image;
+
+        const title = document.createElement("h3");
+        title.innerText = el.title;
+
+        const price = document.createElement("p");
+        price.innerHTML = `<b>Price:</b> $${el.price}`;
+
+        const rate = document.createElement("p");
+        rate.innerHTML = `<b>Rating:</b> ${el.rating.rate}`;
+
+        const addToCart = document.createElement("button");
+        addToCart.innerHTML = "Add to Cart";
+
+        addToCart.onclick = function () {
+          let cart = JSON.parse(localStorage.getItem("cart")) || [];
+          cart.push(el);
+          localStorage.setItem("cart", JSON.stringify(cart));
+          updateCartCount();
+          alert("Item added to cart");
+        };
+
+        box.append(image, title, price, rate, addToCart);
+        document.querySelector(".cont").append(box);
+      });
+    }
+
+    // Search
+    function search() {
+      const query = document.querySelector("#sch").value;
+      let searchData = bag.filter((el) =>
+        el.title.toLowerCase().includes(query.toLowerCase())
+      );
+      displayCard(searchData);
+    }
+
+    // Sort
+    function sort() {
+      const query = document.querySelector("#sort").value;
+      if (query === "asc") {
+        const sortedAscData = [...bag].sort((a, b) => a.price - b.price);
+        displayCard(sortedAscData);
+      } else if (query === "dsc") {
+        const sortedDscData = [...bag].sort((a, b) => b.price - a.price);
+        displayCard(sortedDscData);
+      } else {
+        displayCard(bag);
+      }
+    }
+
+    // Update Cart Count
+    function updateCartCount() {
+      let cart = JSON.parse(localStorage.getItem("cart")) || [];
+      document.getElementById("cartCount").innerText = cart.length;
+    }
+  </script>
+</body>
+</html>

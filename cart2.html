@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <link rel="stylesheet" href="ecommer2.css" />
+  </head>
+  <body>
+    <h1><a href="Ecommerce.html"> Go to Ecommerce page</a></h1>
+    <h1>Cart Page</h1>
+    <h2 id="total">Total Amount :</h2>
+
+    <div class="cont"></div>
+  </body>
+</html>
+
+<script>
+  let cartArr = JSON.parse(localStorage.getItem("cart")) || [];
+  displayCard(cartArr);
+
+  updateTotal();
+
+  //   // Delete All button
+  //   const deletCard = document.createElement("button");
+  //   deletCard.style.backgroundColor = "red";
+  //   deletCard.style.color = "#fff";
+  //   deletCard.style.margin = "20px auto";
+  //   deletCard.style.display = "block";
+  //    deletCard.style.padding = "10px 20px";
+  //   deletCard.innerText = "Delete All";
+
+  //   deletCard.addEventListener("click", () => {
+  //     cartArr = [];
+  //     localStorage.setItem("cart", JSON.stringify(cartArr));
+  //     displayCard(cartArr);
+  //     updateTotal();
+  //   });
+
+  document.querySelector("body").append(deletCard);
+
+  function updateTotal() {
+    const totalAmount = cartArr.reduce((acc, el) => acc + el.price, 0);
+    document.querySelector("#total").innerText = `Cart Total: ${totalAmount}`;
+  }
+
+  function displayCard(arr) {
+    document.querySelector(".cont").innerHTML = "";
+    arr.forEach((el,idx) => {
+      const box = document.createElement("div");
+
+      const image = document.createElement("img");
+      image.setAttribute("src", el.image);
+
+      const title = document.createElement("h3");
+      title.innerText = `Title: ${el.title}`;
+
+      const description = document.createElement("p");
+      description.innerText = `Description: ${el.description}`;
+
+      const category = document.createElement("p");
+      category.innerText = `Category: ${el.category}`;
+
+      const price = document.createElement("button");
+      price.innerText = `Price: ${el.price}`;
+
+      const rate = document.createElement("button");
+      rate.innerText = `Rate: ${el.rating.rate}  Count: ${el.rating.count}`;
+
+      // deleter button individual
+      const deletbtn = document.createElement("button");
+      deletbtn.innerText = "Delete Item";
+      deletbtn.style.backgroundColor = "red";
+      deletbtn.style.color = "#fff";
+      deletbtn.style.marginTop = "10px";
+
+      deletbtn.onclick = function()
+      {
+        cartArr.splice(idx,1)
+        localStorage.setItem("cart", JSON.stringify(cartArr))
+        displayCard(cartArr)
+        updateTotal()
+      }
+
+      box.append(image, title, description, category, price, rate,deletbtn);
+      document.querySelector(".cont").append(box);
+    });
+  }
+</script>
